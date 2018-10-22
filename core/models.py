@@ -1,20 +1,29 @@
-import sqlite3 as sql
 import datetime
 
-
-def insertUser(name, surname, username, password):
-    con = sql.connect("database.db")
-    cur = con.cursor()
-    cur.execute("INSERT INTO users (Name, Surname, Username, Password, RegisterDate LastLoginDate) VALUES (?,?)",
-                (name, surname, username, password, datetime.datetime.now(), datetime.datetime.now()))
-    con.commit()
-    con.close()
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 
 
-def retrieveUsers():
-    con = sql.connect("database.db")
-    cur = con.cursor()
-    cur.execute("SELECT username, password FROM users")
-    users = cur.fetchall()
-    con.close()
-    return users
+app = Flask(__name__)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+db = SQLAlchemy(app)
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    name = db.Column(db.String(100))
+    surname = db.Column(db.String(100))
+    username = db.Column(db.String(100), unique=True)
+    user_type = db.Column(db.String(100))
+    password = db.Column(db.String(100))
+    register_date = db.Column(db.String(100))
+    last_login_date = db.Column(db.String(100))
+
+    def __init__(self, name, surname, username, password):
+        self.name = name
+        self.surname = surname
+        self.username = username
+        self.password = password
+        self.register_date = datetime.datetime.now()
+        self.last_login_date = datetime.datetime.now()
+
