@@ -18,9 +18,13 @@
 
         {% if user_logged_in %}
             <p>You are logged in!</p> <br>
+
+            {% if username != "" %}
+                <p>You are logged in as {{username}}!</p> <br>
+            {% endif %}
             <p><a href="{{url_for("log_out")}}">log out</a></p>
         {% else %}
-            <p>Please <a href="{{url_for("sign_in")}}">sign in</a> or <a href="{{url_for("sign_up")}}">sign up</a> </p>
+            <p>Please <a href="{{url_for("log_in")}}">log in</a> or <a href="{{url_for("sign_up")}}">sign up</a> </p>
         {% endif %}
     	
     </div>
