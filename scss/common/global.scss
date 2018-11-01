@@ -1,12 +1,6 @@
  a:focus, a:active { text-decoration: none; outline: none; @include transition(all 300ms ease 0s); }
-input, select, textarea { outline: none; @include appearance( unset ); }
-input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
-    @include appearance( none );
-    margin: 0;
-}
+
 input:focus, select:focus, textarea:focus { outline: none; @include box-shadow-input(none); }
-input[type=checkbox] { @include appearance( checkbox ); }
-input[type=radio] { @include appearance( radio ); }
 img { max-width: 100%; height: auto; }
 figure { margin: 0; }
 p { margin-bottom: 0px; font-size: 15px; color: #777;}

@@ -23,6 +23,21 @@
                 <p>You are logged in as {{username}}!</p> <br>
             {% endif %}
             <p><a href="{{url_for("log_out")}}">log out</a></p>
+            <p><a href="{{url_for("add_recipe")}}">Add Recipe</a></p>
+
+            <div>
+                <h3>Recipes</h3>
+                <ul>
+                {% for recipe in recipes %}
+                    <li>
+                        <h5>{{recipe.name}}</h5>
+                        by User{{recipe.user_id}}
+                        <p>{{recipe.text}}</p>
+                        <br>
+                    </li>
+                {% endfor %}
+                </ul>
+            </div>
         {% else %}
             <p>Please <a href="{{url_for("log_in")}}">log in</a> or <a href="{{url_for("sign_up")}}">sign up</a> </p>
         {% endif %}
