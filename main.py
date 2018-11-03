@@ -1,7 +1,7 @@
 import datetime
 
 from flask import Flask, redirect, url_for, request, flash, session, render_template
-from flask_sqlalchemy import SQLAlchemy
+from  flask_sqlalchemy  import SQLAlchemy
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "super_secret_key"
