@@ -31,7 +31,8 @@ class User(db.Model):
 	recipes = db.relationship("Recipe", backref="recipes_of_user")
 
 
-	def __init__(self, name, surname, username, password, email):
+	def __init__(self, user_type, name, surname, username, password, email):
+		self.user_type = user_type
 		self.name = name
 		self.surname = surname
 		self.username = username
@@ -179,6 +180,52 @@ def home():
 	return render_template('index.html', user_logged_in=user_logged_in, username=username, recipes=recipes)
 
 
+################admin and verificate
+@app.route('/admin', methods=['POST', 'GET'])
+def admin():
+	if not "logged_in" in session:
+		user_logged_in = False
+		session["logged_in"] = False
+	else:
+		user_logged_in = session["logged_in"]
+
+	if not user_logged_in:
+		return render_template('log_in.html')
+
+	if "username" in session:
+		username = session["username"]
+	else:
+		username = ""
+	users = User.query.all()
+	return render_template('admin.html', user_logged_in=user_logged_in, username=username, users = users)
+
+@app.route("/verificate/<string:uname>",  methods = ["GET"])
+def verify(uname):
+	if not "logged_in" in session:
+		user_logged_in = False
+		session["logged_in"] = False
+	else:
+		user_logged_in = session["logged_in"]
+
+	if not user_logged_in:
+		return render_template('log_in.html')
+
+	if "username" in session:
+		username = session["username"]
+	else:
+		username = ""
+	user = User.query.filter_by(username=uname).first()
+	if user.user_type == 'verified':
+		user.user_type = 'nonverified'
+
+	else:
+		user.user_type = 'verified'
+	db.session.commit()
+
+	return redirect(url_for('admin'))
+
+########################
+
 @app.route('/log_out', methods=['POST', 'GET'])
 def log_out():
 	session["logged_in"] = False
@@ -226,7 +273,11 @@ def log_in_confirm():
 			session["user_id"] = user.id
 			print("{}, logged in".format(user))
 			flash("Welcome back!")
-			return redirect(url_for('home'))
+			if user.username == "admin":
+				return redirect(url_for('admin'))
+			else:
+				return redirect(url_for('home'))
+
 	else:
 		print("GET, log_in_confirm")
 		return redirect(url_for('log_in'))
@@ -246,7 +297,7 @@ def sign_up_confirm():
 		email = request.form.get("email")
 		password = request.form.get("pass")
 		password_re = request.form.get("re_pass")
-
+		user_type = 'nonverified'
 		fields = ["name", "surname", "username", "email", "password"]
 		control = [bool(name), bool(surname), bool(username), bool(email), bool(password), bool(password_re)]
 
@@ -262,7 +313,7 @@ def sign_up_confirm():
 			return redirect(url_for('sign_up'))
 		else:
 			# add user into database
-			new_user = User(name=name, surname=surname, username=username, password=password, email=email)
+			new_user = User(user_type = user_type,name=name, surname=surname, username=username, password=password, email=email)
 			db.session.add(new_user)
 			db.session.commit()
 

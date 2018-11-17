@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<title>Admin Page</title>
+</head>
+<body>
+
+    <div style = "margin-Top:100px" class="container">
+        <h3>User List</h3>
+        <p><a href="{{url_for("log_out")}}" class = "btn btn-danger" >log out</a></p>
+    </div>
+
+    </form>
+    <br>
+        {% if users == []%}
+            <div class="alert alert-warning" role="alert">
+                There is no user.
+            </div>
+
+        {% else %}
+
+        <table class="table">
+        <thead>
+        <tr>
+          <th scope="col">id</th>
+          <th scope="col">user_type</th>
+          <th scope="col">name </th>
+          <th scope="col">surname</th>
+            <th scope="col">username</th>
+          <th scope="col">password</th>
+		  <th scope="col">email</th>
+		  <th scope="col"> </th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in users: %}
+        {% if user.username != "admin" :%}
+        <tr>
+            <th scope="row">{{user.id}}</th>
+            <td>{{user.user_type}}</td>
+            <td>{{user.name}}</td>
+            <td>{{user.surname}}</td>
+			<td>{{user.username}}</td>
+			<td>{{user.password}}</td>
+			<td>{{user.email}}</td>
+             <td><a href="/verificate/{{user.username}}" class = "btn btn-danger">Verify/NonVerify</a></td>
+        </tr>
+        {% endif%}
+        {% endfor %}
+        </tbody>
+        </table>
+
+        {%endif%}
+
+
+</div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+</html>
