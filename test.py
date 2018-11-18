@@ -97,6 +97,35 @@ class Test(object):
         assert (self.browser.find_element_by_xpath('//div[@class="forchecking"]')) 
         print("adding recipe is successful")
         
+               
+        def check_delete_recipe(self):
+            
+            url = '/delete_recipe/' + str(self.get_recipe_no_url()) ## the following number in the url indicating the recipe order number has to be owned by the user in that session.
+            # later on an extra method is added to automatically getting order number.
+            self.browser.get(self.site + url)
+
+            popups = WebDriverWait(self.browser, self.delay).until(
+            lambda x: x.find_elements_by_xpath('//div[@class="deleterecipe-form"]'))
+        confirm_input = popups[0].find_element_by_xpath('//input[@name="confirmation"]')
+        confirm_input.send_keys(self.recipe_text)
+        
+        
+        delete_recipe_button = popups[0].find_element_by_xpath('//input[@name="delete_recipe"]')
+ 
+        delete_recipe_button.click()
+ 
+        assert (self.browser.find_element_by_xpath('//div[@class="forchecking"]')) 
+        print("deleting recipe is successful")
+        
+        def get_recipe_no_url(self):
+            ## div tag before delete recipe url should be classified with a specific name or id
+            url = '/profile'
+            self.browser.get(self.site + url)
+            popups = WebDriverWait(self.browser, self.delay).until(
+            lambda x: x.find_elements_by_xpath('//div[@class="main"]'))
+            return popups[0].find_element_by_xpath('//a[@name="recipe_order"]').getAttribute("href")
+            
+            
     def run(self):
         self.browser = webdriver.Chrome(r'C:\Users\emreb\Desktop\chromedriver.exe')
         for attr in __class__.__dict__:
