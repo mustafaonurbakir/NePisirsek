@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Sign Up Form by Colorlib</title>
+    <title>Ne Pişirsek?</title>
 
     <!-- Font Icon -->
     <link rel="stylesheet" href="{{ url_for('static', filename='fonts/material-icon/css/material-design-iconic-font.min.css') }}">
@@ -25,6 +25,7 @@
             {% endif %}
 			
             <p><a href="{{url_for("log_out")}}">log out</a></p>
+            <p><a href="{{url_for("profile")}}">My Profile</a></p>
             <p><a href="{{url_for("add_recipe")}}">Add Recipe</a></p>
 
             <div>

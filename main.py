@@ -1,7 +1,7 @@
 import datetime
 
 from flask import Flask, redirect, url_for, request, flash, session, render_template
-from  flask_sqlalchemy  import SQLAlchemy
+from  flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "super_secret_key"
@@ -179,6 +179,17 @@ def home():
 
 	return render_template('index.html', user_logged_in=user_logged_in, username=username, recipes=recipes)
 
+@app.route('/profile', methods=['POST', 'GET'])
+def profile():
+	if check_if_user_logged_in():
+		user_id = session["user_id"]
+
+		recipes = Recipe.query.filter_by(user_id=user_id)
+
+		return render_template('profile.html', username=session["username"], recipes=recipes)
+	else:
+		return render_template('log_in.html')
+
 
 ################admin and verificate
 @app.route('/admin', methods=['POST', 'GET'])
@@ -315,11 +326,15 @@ def sign_up_confirm():
 			# add user into database
 			new_user = User(user_type = user_type,name=name, surname=surname, username=username, password=password, email=email)
 			db.session.add(new_user)
+			db.session.flush()
+
+			user_id = new_user.id
 			db.session.commit()
 
 
 			session["logged_in"] = True
 			session["username"] = new_user.username
+			session["user_id"] = new_user.id
 			#session["user"] = new_user
 			return redirect(url_for('home'))
 	else:
@@ -346,7 +361,7 @@ def add_recipe_confirm():
 		recipe_name = request.form.get("recipe_name")
 		recipe_text = request.form.get("recipe_text")
 		category_id = request.form.get("category")
-		ingredient_ids = request.form.get("ingredient")
+		ingredient_ids = request.form.getlist("ingredient")
 
 		fields = ["recipe_name", "recipe_text", "category", "ingredient_ids"]
 		control = [bool(recipe_name), bool(recipe_text), bool(category_id), bool(ingredient_ids)]
@@ -364,11 +379,15 @@ def add_recipe_confirm():
 			db.session.add(new_recipe)
 			db.session.flush()  # to get id of the recipe, changes should be committed (flushed)
 
+
 			recipe_id = new_recipe.id
 
+			print("ingredient_ids = {}".format(ingredient_ids))
+			print(type(ingredient_ids))
 			for ingredient_id in ingredient_ids:
 				new_recipe_ingredient = RecipeIngredientTable(recipe_id=recipe_id, ingredient_id=ingredient_id)
 				db.session.add(new_recipe_ingredient)
+				db.session.flush()
 
 			db.session.commit()
 
@@ -379,6 +398,142 @@ def add_recipe_confirm():
 		print("GET, add_recipe")
 		return redirect(url_for('add_recipe'))
 
+
+@app.route('/edit_recipe/<string:recipe_id>', methods=['POST', 'GET'])
+def edit_recipe(recipe_id):
+	if not check_if_user_logged_in():
+		print("You must log in!")
+		flash("You must log in!", "error")
+		return redirect(url_for('log_in'))
+	else:
+		#categories = RecipeCategory.query.all()
+		#ingredients = Ingredient.query.all()
+		recipe = Recipe.query.filter_by(id=recipe_id).first_or_404()
+
+		if "user_id" in session:
+			user_id = session["user_id"]
+		else:
+			username = session["username"]
+			user = User.query.filter_by(username=username).first()
+			user_id = user.id
+
+		if not recipe.user_id == user_id:
+			print("You are not authorized to edit this recipe")
+			flash("You are not authorized to edit this recipe", "error")
+			return redirect(url_for('home'))
+		else:
+			session["recipe_id"] = recipe_id
+			return render_template('edit_recipe.html', recipe=recipe)
+
+
+@app.route('/edit_recipe_confirm', methods=['POST', 'GET'])
+def edit_recipe_confirm():
+	if not "recipe_id" in session:
+		return redirect(url_for('home'))
+	else:
+		recipe_id = session["recipe_id"]
+
+	if request.method == "POST":
+		recipe_name = request.form.get("recipe_name")
+		recipe_text = request.form.get("recipe_text")
+		#category_id = request.form.get("category")
+		#ingredient_ids = request.form.get("ingredient")
+
+		fields = ["recipe_name", "recipe_text"]
+		control = [bool(recipe_name), bool(recipe_text)]
+
+		missing_inputs = [fields[i] for i in range(len(fields)) if not control[i]]
+
+		if len(missing_inputs) > 0:  # check if all the fields are filled
+			flash("{} field(s) must be filled!".format(missing_inputs), "error")
+			print("{} field(s) must be filled!".format(missing_inputs))
+			return redirect('edit_recipe/{}'.format(recipe_id))
+		else:
+			recipe = Recipe.query.get(recipe_id)
+			recipe.name = recipe_name
+			recipe.text = recipe_text
+			recipe.last_edit_date = datetime.datetime.now()
+
+			db.session.commit()
+			del session["recipe_id"]
+
+			print("Recipe Edited!")
+			flash("Recipe Edited!")
+			return redirect(url_for('home'))
+	else:
+		print("GET, edit_recipe")
+		return redirect('edit_recipe/{}'.format(recipe_id))
+
+
+@app.route('/delete_recipe/<string:recipe_id>', methods=['POST', 'GET'])
+def delete_recipe(recipe_id):
+	if not check_if_user_logged_in():
+		print("You must log in!")
+		flash("You must log in!", "error")
+		return redirect(url_for('log_in'))
+	else:
+		#categories = RecipeCategory.query.all()
+		#ingredients = Ingredient.query.all()
+		recipe = Recipe.query.filter_by(id=recipe_id).first_or_404()
+
+		if "user_id" in session:
+			user_id = session["user_id"]
+		else:
+			username = session["username"]
+			user = User.query.filter_by(username=username).first()
+			user_id = user.id
+
+		if not recipe.user_id == user_id:
+			print("You are not authorized to delete this recipe")
+			flash("You are not authorized to delete this recipe", "error")
+			return redirect(url_for('home'))
+		else:
+			session["recipe_id"] = recipe_id
+			return render_template('delete_recipe.html', recipe=recipe)
+
+
+@app.route('/delete_recipe_confirm', methods=['POST', 'GET'])
+def delete_recipe_confirm():
+	if not "recipe_id" in session:
+		return redirect(url_for('home'))
+	else:
+		recipe_id = session["recipe_id"]
+
+	if request.method == "POST":
+		choice = request.form.get("confirmation")
+
+		fields = ["choice"]
+		control = [bool(choice)]
+
+		missing_inputs = [fields[i] for i in range(len(fields)) if not control[i]]
+
+		if len(missing_inputs) > 0:  # check if all the fields are filled
+			flash("{} field(s) must be filled!".format(missing_inputs), "error")
+			print("{} field(s) must be filled!".format(missing_inputs))
+			return redirect('edit_recipe/{}'.format(recipe_id))
+		else:
+			if choice == "yes":
+				recipe = Recipe.query.get(recipe_id)
+
+				# delete foreign keys
+				recipe_ingredients = RecipeIngredientTable.query.filter_by(recipe_id=recipe_id)
+				print("recipe_ingredients = {}".format(recipe_ingredients))
+				for recipe_ingredient in recipe_ingredients:
+					db.session.delete(recipe_ingredient)
+				# then delete itself
+				db.session.delete(recipe)
+				db.session.commit()
+
+				print("Recipe Deleted!")
+				flash("Recipe Deleted!")
+				del session["recipe_id"]
+				return redirect(url_for('home'))
+			else:
+				print("You are not sure to delete the recipe!")
+				return redirect(url_for('home'))
+	else:
+		print("GET, delete_recipe")
+		return redirect('delete_recipe/{}'.format(recipe_id))
 
 
 if __name__ == '__main__':

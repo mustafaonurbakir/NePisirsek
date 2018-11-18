@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>My Profile</title>
+
+    <!-- Font Icon -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='fonts/material-icon/css/material-design-iconic-font.min.css') }}">
+    <!-- Main css -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+<body>
+    <div class="main">
+        <h2>Hi, {{ username }}!</h2>
+        <a href="{{url_for("log_out")}}">log out</a>
+        <br>
+        <a href="{{url_for("add_recipe")}}">Add New Recipe</a>
+        <br>
+
+        <div>
+            <h3>Your Recipes</h3>
+            <ul>
+            {% for recipe in recipes %}
+                <li>
+                    <h5>{{recipe.name}}</h5>
+                    <p>{{recipe.text}}</p>
+                    <a href="{{url_for("edit_recipe", recipe_id=recipe.id)}}">Edit this recipe</a>
+                    <br>
+                    <a href="{{url_for("delete_recipe", recipe_id=recipe.id)}}">Delete this recipe</a>
+                    <br>
+                </li>
+            {% endfor %}
+            </ul>
+        </div>
+
+
+    </div>
+
+    <!-- JS -->
+
+    <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body><!-- This templates was made by Colorlib (https://colorlib.com) -->
+</html>
