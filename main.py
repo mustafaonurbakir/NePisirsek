@@ -208,7 +208,7 @@ def admin():
 		
 	
 	users = User.query.all()
-	return render_template('admin.html', user_logged_in=user_logged_in, username=username, users = users)
+	return render_template('admin.html', user_logged_in=user_logged_in, username='admin', users = users)
 
 @app.route("/verificate/<string:uname>",  methods = ["GET"])
 def verify(uname):
