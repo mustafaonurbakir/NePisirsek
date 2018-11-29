@@ -203,10 +203,10 @@ def admin():
 	if not user_logged_in:
 		return render_template('log_in.html')
 
-	if "username" in session:
-		username = session["username"]
-	else:
-		username = ""
+	if not session["username"] == "admin":
+		return redirect(url_for('home'))
+		
+	
 	users = User.query.all()
 	return render_template('admin.html', user_logged_in=user_logged_in, username=username, users = users)
 
