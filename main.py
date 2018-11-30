@@ -92,6 +92,18 @@ class Recipe(db.Model):
 	def get_category(self):
 		return RecipeCategory.query(RecipeCategory.name).filter_by(id=self.id).first()
 
+	def get_score(self):
+		recipe_votes = Vote.query.filter_by(recipe_id=self.id)
+
+		score = 0
+		for vote in recipe_votes:
+			score += vote.value
+
+		return score
+
+
+
+
 
 class Ingredient(db.Model):
 	__tablename__ = 'Ingredient'
@@ -136,6 +148,21 @@ class RecipeIngredientTable(db.Model):
 		return recipes_that_have_ingredient
 
 
+class Vote(db.Model):
+	__tablename__ = 'Vote'
+	id = db.Column(db.Integer, primary_key = True)
+	value = db.Column(db.Integer, nullable=False)
+
+	# One-to-Many
+	recipe_id = db.Column(db.Integer, db.ForeignKey('Recipe.id'), nullable=False)
+	# One-to-Many
+	user_id = db.Column(db.Integer, db.ForeignKey('User.id'), nullable=False)
+
+
+	def __init__(self, recipe_id, user_id, value):
+		self.recipe_id = recipe_id
+		self.user_id = user_id
+		self.value = value
 
 
 
@@ -169,15 +196,17 @@ def home():
 	if not user_logged_in:
 		return render_template('log_in.html')
 
-	if "username" in session:
-		username = session["username"]
-	else:
-		username = ""
+	username = session["username"]
+	user_id = session["user_id"]
 
 	recipes = Recipe.query.all()
+	already_voted_recipes = Vote.query.filter_by(user_id=user_id)
+	already_voted_recipe_ids = [vote.recipe_id for vote in already_voted_recipes]
 	#print(session)
 
-	return render_template('index.html', user_logged_in=user_logged_in, username=username, recipes=recipes)
+	return render_template('index.html', user_logged_in=user_logged_in,
+	                       username=username, user_id=user_id, recipes=recipes,
+	                       already_voted_recipes=already_voted_recipes, already_voted_recipe_ids=already_voted_recipe_ids)
 
 @app.route('/profile', methods=['POST', 'GET'])
 def profile():
@@ -536,6 +565,52 @@ def delete_recipe_confirm():
 		return redirect('delete_recipe/{}'.format(recipe_id))
 
 
+@app.route('/vote_recipe/<string:recipe_id>/<string:evaluation>', methods=['POST', 'GET'])
+def vote_recipe(recipe_id, evaluation):
+	#if request.method == "POST":
+		if not check_if_user_logged_in():
+			print("You must log in to vote")
+			flash("You must log in to vote", "error")
+			return redirect(url_for('home'))
+
+		# check if recipe_id is valid
+		recipe = Recipe.query.filter_by(id=recipe_id).first()
+		if Recipe.query.filter_by(id=recipe_id).count() == 0:
+			print("There is no such recipe")
+			flash("There is no such recipe", "error")
+			return redirect(url_for('home'))
+
+		# check if user is not owning the recipe
+		user_id = session["user_id"]
+		if recipe.user_id == user_id:
+			print("You cannot vote your own recipe")
+			flash("You cannot vote your own recipe", "error")
+			return redirect(url_for('home'))
+
+		if evaluation == "like":
+			value = 1
+		elif evaluation == "dislike":
+			value = -1
+		else:
+			print("Invalid evaluation")
+			flash("Invalid evaluation", "error")
+			return redirect(url_for('home'))
+
+		# check if user is a verified chef or not
+		user = User.query.get(user_id)
+		if user.user_type == "verified":
+			value *= 3
+
+		new_vote = Vote(user_id=user_id, recipe_id=recipe_id, value=value)
+		db.session.add(new_vote)
+		db.session.commit()
+		return redirect(url_for('home'))
+
+	#else:
+	#	print("GET, vote_recipe")
+	#	return redirect(url_for('home'))
+
+
 if __name__ == '__main__':
-	#db.create_all()
+	db.create_all()
 	app.run(debug=True)
