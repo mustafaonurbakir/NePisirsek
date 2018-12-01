@@ -27,7 +27,6 @@
             <p><a href="{{url_for("log_out")}}">log out</a></p>
             <p><a name="profile" href="{{url_for("profile")}}">My Profile</a></p>
             <p><a href="{{url_for("add_recipe")}}">Add Recipe</a></p>
-
             <div>
                 <h3>Recipes</h3>
                 <ul>
@@ -44,8 +43,8 @@
                         {% elif recipe.user_id == user_id %}
                             I guess you like your own recipe :)
                         {% else %}
-                            <a href="{{url_for("vote_recipe", recipe_id=recipe.id, evaluation="like")}}">like</a>
-                            <a href="{{url_for("vote_recipe", recipe_id=recipe.id, evaluation="dislike")}}">dislike</a>
+                            <a name= "like" href="{{url_for("vote_recipe", recipe_id=recipe.id, evaluation="like")}}">like</a>
+                            <a name= "dislike" href="{{url_for("vote_recipe", recipe_id=recipe.id, evaluation="dislike")}}">dislike</a>
                         {% endif %}
                         <br>
                     </li>

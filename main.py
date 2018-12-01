@@ -610,6 +610,8 @@ def vote_recipe(recipe_id, evaluation):
 	#	print("GET, vote_recipe")
 	#	return redirect(url_for('home'))
 
+	
+
 
 if __name__ == '__main__':
 	db.create_all()
