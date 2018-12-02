@@ -234,8 +234,8 @@ def admin():
 
 	if not session["username"] == "admin":
 		return redirect(url_for('home'))
-		
-	
+
+
 	users = User.query.all()
 	return render_template('admin.html', user_logged_in=user_logged_in, username='admin', users = users)
 
@@ -633,17 +633,23 @@ def search():
 		else:
 			# implement search logic here
 			if search_by == "ingredient":
-				# ingredient'ler virgülle ayırılarak giriliyor diye düşünürsek
-				# bütün text'i virgülle split etmemiz lazım
-				ingredients = search_text.split_by(",") # burayı komple salladım
 
-				recipe_ingredient_pairs = RecipeIngredientTable.query.filter_by(ingredient_id=ingredients) # salladım
-				#vs vs
-				recipes = "x"
+				ingredients = search_text
+				selected_ingredient = Ingredient.query.filter_by(name=ingredients).first()
+				recipe_ingredient_pairs = RecipeIngredientTable.query.filter_by(ingredient_id=selected_ingredient.id)
+				recipes=[]
+				for recipe_ingredient_pair in recipe_ingredient_pairs:
+					recipe = Recipe.query.filter_by(id = recipe_ingredient_pair.recipe_id)
+					recipes.append(recipe)
+
 			elif search_by == "recipe_name":
-				recipes = "x"
+
+				recipes = Recipe.query.filter_by(name=search_text)
+
 			elif search_by == "recipe_text":
-				recipes = "x"
+				recipes = ' '
+			elif search_by == "user_name":
+				recipes = ''
 			else:
 				# error
 				render_template('search.html', method="GET")

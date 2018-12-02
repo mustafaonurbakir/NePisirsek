@@ -36,11 +36,24 @@
                                 <textarea name="search_text" id="search_text" rows="2" cols="35">Search from here</textarea>
                             </div>
 
-                            <div>
+                            <div class="SearchDiv" >
                                 <b>Search recipe by</b>
-                                <input type="radio" name="search_by" value="recipe_name">Name of Recipe
-                                <input type="radio" name="search_by" value="ingredient">Ingredient(s)
-                                <input type="radio" name="search_by" value="recipe_text">Text of Recipe
+                                <div class= "radio1">
+                                    <input type="radio" name="search_by" value="recipe_name">
+                                    <span>Name of Recipe</span>
+                                </div>
+                                <div class = "radio2">
+                                    <input type="radio" name="search_by" value="ingredient">
+                                    <span> Ingredient(s) </span>
+                                </div>
+                                <div class = "radio3">
+                                    <input type="radio" name="search_by" value="recipe_text">
+                                    <span> Text of Recipe </span>
+                                </div>
+                                <div class = "radio4">
+                                    <input type="radio" name="search_by" value="user_name">
+                                    <span> Name of User </span>
+                                </div>
                             </div>
 
                             <div class="form-group form-button">
@@ -53,27 +66,33 @@
                 {% if method=="POST" %}
                     <div>
                         <h3>Recipes</h3>
-                        <ul>
-                        {% for recipe in recipes %}
-                            <li>
-                                <h5>{{recipe.name}}</h5>
-                                by User{{recipe.user_id}}
-                                <p>{{recipe.text}}</p>
-                                Score: {{ recipe.get_score() }}
-                                <br>
 
-                                {% if recipe.id in already_voted_recipe_ids %}
-                                    You already voted for this recipe
-                                {% elif recipe.user_id == user_id %}
-                                    I guess you like your own recipe :)
-                                {% else %}
-                                    <a name= "like" href="{{url_for("vote_recipe", recipe_id=recipe.id, evaluation="like")}}">like</a>
-                                    <a name= "dislike" href="{{url_for("vote_recipe", recipe_id=recipe.id, evaluation="dislike")}}">dislike</a>
-                                {% endif %}
-                                <br>
-                            </li>
+                        {% for recipes_example in recipes %}
+                            <ul>
+
+                                {% for recipe in recipes_example %}
+                                    <li>
+                                        <h5>{{recipe.name}}</h5>
+                                        by User{{recipe.user_id}}
+                                        <p>{{recipe.text}}</p>
+                                        Score: {{ recipe.get_score() }}
+                                        <br>
+
+                                        {% if recipe.id in already_voted_recipe_ids %}
+                                            You already voted for this recipe
+                                        {% elif recipe.user_id == user_id %}
+                                            I guess you like your own recipe :)
+                                        {% else %}
+                                            <a name= "like" href="{{url_for("vote_recipe", recipe_id=recipe.id, evaluation="like")}}">like</a>
+                                            <a name= "dislike" href="{{url_for("vote_recipe", recipe_id=recipe.id, evaluation="dislike")}}">dislike</a>
+                                        {% endif %}
+                                        <br>
+                                    </li>
+                                {% endfor %}
+
+
+                            </ul>
                         {% endfor %}
-                        </ul>
                     </div>
                 {% endif %}
             </div>
