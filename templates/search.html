@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>
+        {% if method=="GET" %}
+            Search a Recipe
+        {% elif method=="POST" %}
+            Search Results
+        {% endif %}
+    </title>
+
+    <!-- Font Icon -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='fonts/material-icon/css/material-design-iconic-font.min.css') }}">
+    <!-- Main css -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+<body>
+
+    <div class="main">
+        <!-- Sing in  Form -->
+        <section class="sign-in">
+            <div class="container">
+                <div class="signin-content">
+                    <div class="signin-image">
+                        <figure><img src="{{ url_for('static', filename='images/signin-image.jpg') }}" alt="sing up image"></figure>
+                    </div>
+
+                    <div class="search-form">
+                        <h2 class="form-title">Search Recipe</h2>
+                        <form action="{{url_for("search")}}" method="POST" class="register-form" id="search-form">
+                            <div class="form-group">
+                                <textarea name="search_text" id="search_text" rows="2" cols="35">Search from here</textarea>
+                            </div>
+
+                            <div>
+                                <b>Search recipe by</b>
+                                <input type="radio" name="search_by" value="recipe_name">Name of Recipe
+                                <input type="radio" name="search_by" value="ingredient">Ingredient(s)
+                                <input type="radio" name="search_by" value="recipe_text">Text of Recipe
+                            </div>
+
+                            <div class="form-group form-button">
+                                <input type="submit" name="add_recipe" id="add_recipe" class="form-submit" value="Search"/>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                {% if method=="POST" %}
+                    <div>
+                        <h3>Recipes</h3>
+                        <ul>
+                        {% for recipe in recipes %}
+                            <li>
+                                <h5>{{recipe.name}}</h5>
+                                by User{{recipe.user_id}}
+                                <p>{{recipe.text}}</p>
+                                Score: {{ recipe.get_score() }}
+                                <br>
+
+                                {% if recipe.id in already_voted_recipe_ids %}
+                                    You already voted for this recipe
+                                {% elif recipe.user_id == user_id %}
+                                    I guess you like your own recipe :)
+                                {% else %}
+                                    <a name= "like" href="{{url_for("vote_recipe", recipe_id=recipe.id, evaluation="like")}}">like</a>
+                                    <a name= "dislike" href="{{url_for("vote_recipe", recipe_id=recipe.id, evaluation="dislike")}}">dislike</a>
+                                {% endif %}
+                                <br>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+
+    </div>
+
+    <!-- JS -->
+
+    <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body><!-- This templates was made by Colorlib (https://colorlib.com) -->
+</html>

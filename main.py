@@ -610,7 +610,48 @@ def vote_recipe(recipe_id, evaluation):
 	#	print("GET, vote_recipe")
 	#	return redirect(url_for('home'))
 
-	
+@app.route('/search', methods=['POST', 'GET'])
+def search():
+	if not check_if_user_logged_in():
+		return redirect(url_for('home'))
+
+	if request.method == "POST":  # result of search
+		print("POST, search")
+		search_text = request.form.get("search_text")
+		search_by = request.form.get("search_by")
+		#ingredient_ids = request.form.get("ingredient")
+
+		fields = ["search_text", "search_by"]
+		control = [bool(search_text), bool(search_by)]
+
+		missing_inputs = [fields[i] for i in range(len(fields)) if not control[i]]
+
+		if len(missing_inputs) > 0:  # check if all the fields are filled
+			flash("{} field(s) must be filled!".format(missing_inputs), "error")
+			print("{} field(s) must be filled!".format(missing_inputs))
+			return render_template('search.html', method="GET")
+		else:
+			# implement search logic here
+			if search_by == "ingredient":
+				# ingredient'ler virgülle ayırılarak giriliyor diye düşünürsek
+				# bütün text'i virgülle split etmemiz lazım
+				ingredients = search_text.split_by(",") # burayı komple salladım
+
+				recipe_ingredient_pairs = RecipeIngredientTable.query.filter_by(ingredient_id=ingredients) # salladım
+				#vs vs
+				recipes = "x"
+			elif search_by == "recipe_name":
+				recipes = "x"
+			elif search_by == "recipe_text":
+				recipes = "x"
+			else:
+				# error
+				render_template('search.html', method="GET")
+
+			return render_template('search.html', method="POST", recipes=recipes)
+	else:  # prompt user to search
+		print("GET, search")
+		return render_template('search.html', method="GET")
 
 
 if __name__ == '__main__':
