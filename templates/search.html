@@ -33,7 +33,7 @@
                         <h2 class="form-title">Search Recipe</h2>
                         <form action="{{url_for("search")}}" method="POST" class="register-form" id="search-form">
                             <div class="form-group">
-                                <textarea name="search_text" id="search_text" rows="2" cols="35">Search from here</textarea>
+                                <textarea name="search_text" id="search_text" rows="2" cols="35" placeholder="Search from here" ></textarea>
                             </div>
 
                             <div class="SearchDiv" >
@@ -57,14 +57,14 @@
                             </div>
 
                             <div class="form-group form-button">
-                                <input type="submit" name="add_recipe" id="add_recipe" class="form-submit" value="Search"/>
+                                <input type="submit" name="search_recipe" id="add_recipe" class="form-submit" value="Search"/>
                             </div>
                         </form>
                     </div>
                 </div>
 
                 {% if method=="POST" %}
-                    <div>
+                    <div name="search">
                         <h3>Recipes</h3>
 
                         {% for recipes_example in recipes %}
