@@ -414,7 +414,8 @@ def add_recipe_confirm():
 		recipe_text = request.form.get("recipe_text")
 		category_id = request.form.get("category")
 		ingredient_ids = request.form.getlist("ingredient")
-
+		print(category_id)
+		print(category_id)
 		fields = ["recipe_name", "recipe_text", "category", "ingredient_ids"]
 		control = [bool(recipe_name), bool(recipe_text), bool(category_id), bool(ingredient_ids)]
 
@@ -611,14 +612,14 @@ def vote_recipe(recipe_id, evaluation):
 		if Vote.query.filter_by(recipe_id=recipe_id, user_id=user_id).count() > 0:
 			print("You have already voted to that recipe")
 			flash("You have already voted to that recipe", "error")
-			return redirect(url_for(session["url"]))
+			return redirect(url_for("home"))
 
 
 		# check if user is not owning the recipe
 		if recipe.user_id == user_id:
 			print("You cannot vote your own recipe")
 			flash("You cannot vote your own recipe", "error")
-			return redirect(url_for(session["url"]))
+			return redirect(url_for("home"))
 
 		if evaluation == "like":
 			value = 1
@@ -627,7 +628,7 @@ def vote_recipe(recipe_id, evaluation):
 		else:
 			print("Invalid evaluation")
 			flash("Invalid evaluation", "error")
-			return redirect(url_for(session["url"]))
+			return redirect(url_for("home"))
 
 		# check if user is a verified chef or not
 		user = User.query.get(user_id)
@@ -637,7 +638,7 @@ def vote_recipe(recipe_id, evaluation):
 		new_vote = Vote(user_id=user_id, recipe_id=recipe_id, value=value)
 		db.session.add(new_vote)
 		db.session.commit()
-		return redirect(url_for(session["url"]))
+		return redirect(url_for("home"))
 
 	#else:
 	#	print("GET, vote_recipe")
