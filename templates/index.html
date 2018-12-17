@@ -1,66 +1,113 @@
 <!DOCTYPE html>
+
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Ne Pişirsek?</title>
+	<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Font Icon -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='fonts/material-icon/css/material-design-iconic-font.min.css') }}">
-    <!-- Main css -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+	<title>Ne Pisirsek?</title>
 
-</head>
-<body>
-	<div class="forchecking">
-	</div>
-    <div class="main">
+	<link rel="stylesheet" id="all-css-0-1" href="/static/css/1.css" type="text/css" media="all">
+	<link rel="stylesheet" id="button-2-fonts-css" href="/static/css/2.css" type="text/css" media="all">
 
-        {% if user_logged_in %}
-            <p>You are logged in!</p> <br>
+	</head>
+	<body class="home blog custom-background wp-custom-logo wp-embed-responsive mp6 customizer-styles-applied group-blog highlander-enabled highlander-light infinite-scroll">
+		<div id="page" class="hfeed site">
 
-            {% if username != "" %}
-                <p>You are logged in as {{username}}!</p> <br>
-            {% endif %}
+			<header id="masthead" class="site-header" role="banner">
+				<div class="site-branding">
+					<img width="663" height="260" src="{{ url_for('static', filename='images/yemekler.jpg') }}" >
+					<h1 class="site-title">Ne Pişirsek?</a></h1>
+					<p class="site-description">Pişirilecek şeyler bulun!.</p>
+				</div><!-- .site-branding -->
+			</header><!-- #masthead -->
 
-            <p><a name = "search" href="{{url_for("search")}}">search a recipe</a></p>
-            <p><a href="{{url_for("log_out")}}">log out</a></p>
-            <p><a name="profile" href="{{url_for("profile")}}">My Profile</a></p>
-            <p><a href="{{url_for("add_recipe")}}">Add Recipe</a></p>
-            <div>
-                <h3>Recipes</h3>
-                <ul>
-                {% for recipe in recipes %}
-                    <li>
-                        <h5>{{recipe.name}}</h5>
-                        by User{{recipe.user_id}}
-                        <p>{{recipe.text}}</p>
-                        Score: {{ recipe.get_score() }}
-                        <br>
+			<nav id="site-navigation" class="main-navigation" role="navigation">
+				<div >
+					<ul >
+						<li id="menu-item-271" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-271"><a href="{{url_for("add_recipe")}}">Add Recipe</a></li>
+						<li id="menu-item-272" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-272"><a href="{{url_for("search")}}">Search</a></li>
+						<li id="menu-item-273" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-273"><a href="{{url_for("profile")}}">My Profile</a></li>
+						<li id="menu-item-274" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-274"><a href="{{url_for("log_out")}}">Log out</a></li>
+					</ul>
+				</div>
+			</nav>
 
-                        {% if recipe.id in already_voted_recipe_ids %}
-                            You already voted for this recipe
-                        {% elif recipe.user_id == user_id %}
-                            I guess you like your own recipe :)
-                        {% else %}
-                            <a name= "like" href="{{url_for("vote_recipe", recipe_id=recipe.id, evaluation="like")}}">like</a>
-                            <a name= "dislike" href="{{url_for("vote_recipe", recipe_id=recipe.id, evaluation="dislike")}}">dislike</a>
-                        {% endif %}
-                        <br>
-                    </li>
-                {% endfor %}
-                </ul>
-            </div>
-        {% else %}
-            <p>Please <a href="{{url_for("log_in")}}">log in</a> or <a href="{{url_for("sign_up")}}">sign up</a> </p>
-        {% endif %}
-    	
-    </div>
+			<div id="content" class="site-content">
 
-    <!-- JS -->
+				<div id="primary" class="content-area">
+					<main id="main" class="site-main" role="main">
 
-    <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-</body><!-- This templates was made by Colorlib (https://colorlib.com) -->
+
+						{%for recipe in recipes%}
+						<article id="post-65" class="post-65 post type-post status-publish format-standard has-post-thumbnail hentry category-community tag-food tag-gardening">
+						<header class="entry-header">
+							<div>
+									<img width="982" height="655"
+										 src="static/images/signin-image.jpg"
+										 class="attachment-button-2-featured size-button-2-featured wp-post-image" alt=""
+										 >
+							</div>
+
+							<span class="cat-links"><a rel="category tag">Chef: {{recipe.user_id}}</a></span>
+							<h1 class="entry-title">{{recipe.name}}</h1>
+							<div class="entry-meta">
+								<span class="posted-on">
+									<a rel="bookmark">Score: {{recipe.get_score()}}</a>
+								</span>
+							</div>
+						</header><!-- .entry-header -->
+
+						<div class="entry-content">
+							<p> {{recipe.text}}
+							<div class="page-links">
+
+								{% if recipe.id in already_voted_recipe_ids %}
+									You already voted for this recipe
+								{% elif recipe.user_id == user_id %}
+									I guess you like your own recipe :)
+								{% else %}
+									<a href="{{url_for("vote_recipe", recipe_id=recipe.id, evaluation="like")}}">
+
+										<span class="active-link">
+											<img src="static/images/like.png" style="height: 80%; width: 80%">
+										</span>
+									</a>
+
+									<a href="{{url_for("vote_recipe", recipe_id=recipe.id, evaluation="dislike")}}" >
+										<span class="active-link">
+											<img src="static/images/dislike.png" style="height: 80%; width: 80%" >
+										</span>
+									</a>
+								{% endif %}
+
+							</div>
+						</div><!-- .entry-content -->
+
+					</article><!-- #post-## -->
+						{% endfor %}
+
+
+					</main>
+				</div>
+
+				<div id="secondary" class="widget-area" role="complementary">
+					<aside id="text-3" class="widget widget_text"><h1 class="widget-title">{{username}}</h1>
+						<div class="textwidget">We can write anything.</div>
+					</aside>
+				</div><!-- #secondary -->
+
+			</div><!-- #content -->
+
+			<footer id="colophon" class="site-footer" role="contentinfo">
+				<div class="footer-widgets clear">
+				</div>
+				<div class="site-info">
+					<a>Ne Pişirsek? İTÜ'de doğmuştur. </a>
+				</div>
+
+			</footer><!-- #colophon -->
+
+		</div>
+	</body>
 </html>

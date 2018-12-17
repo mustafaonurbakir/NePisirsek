@@ -335,6 +335,11 @@ def sign_up_confirm():
 		surname = request.form.get("your_surname")
 		username = request.form.get("username")
 		email = request.form.get("email")
+
+		email_already = User.query.filter_by(email=email).first()
+		email_already_cond = (email_already) is None
+		user_already = User.query.filter_by(username=username).first()
+		user_already_cond = (user_already) is None
 		password = request.form.get("pass")
 		password_re = request.form.get("re_pass")
 		user_type = 'nonverified'
@@ -350,6 +355,14 @@ def sign_up_confirm():
 		elif password != password_re:
 			flash("passwords do not match!", "error")
 			print("passwords do not match!")
+			return redirect(url_for('sign_up'))
+		elif email_already_cond == False:
+			flash("Email is already taken!", "error")
+			print("Email is already taken!")
+			return redirect(url_for('sign_up'))
+		elif user_already_cond == False:
+			flash("User is already taken!", "error")
+			print("User is already taken!")
 			return redirect(url_for('sign_up'))
 		else:
 			# add user into database
@@ -636,25 +649,61 @@ def search():
 
 				ingredients = search_text
 				selected_ingredient = Ingredient.query.filter_by(name=ingredients).first()
+				if(((selected_ingredient) is None)):
+					return render_template('search.html', method="GET")
 				recipe_ingredient_pairs = RecipeIngredientTable.query.filter_by(ingredient_id=selected_ingredient.id)
+
 				recipes=[]
 				for recipe_ingredient_pair in recipe_ingredient_pairs:
 					recipe = Recipe.query.filter_by(id = recipe_ingredient_pair.recipe_id)
 					recipes.append(recipe)
 
+				print(recipes)
+				return render_template('search.html', method="POST", recipes=recipes)
 			elif search_by == "recipe_name":
+				recs = "%" +search_text+ "%"
 
-				recipes = Recipe.query.filter_by(name=search_text)
-
+				selected_rec = Recipe.query.filter(Recipe.name.like(recs)).all()
+				if(((selected_rec) is None)):
+					return render_template('search.html', method="GET")
+				recipes=[]
+				for rec in selected_rec:
+					recipe = Recipe.query.filter_by(id = rec.id)
+					recipes.append(recipe)
+				return render_template('search.html', method="POST", recipes=recipes)
 			elif search_by == "recipe_text":
-				recipes = ' '
+				recs = "%" +search_text+ "%"
+
+				selected_rec = Recipe.query.filter(Recipe.text.like(recs)).all()
+				if(((selected_rec) is None)):
+					return render_template('search.html', method="GET")
+				recipes=[]
+				for rec in selected_rec:
+					recipe = Recipe.query.filter_by(id = rec.id)
+					recipes.append(recipe)
+				return render_template('search.html', method="POST", recipes=recipes)
+
 			elif search_by == "user_name":
-				recipes = ''
+				user_name = search_text
+				recipes = []
+				selected_username = User.query.filter_by(username=user_name).first()
+				if(((selected_username) is None)):
+					return render_template('search.html', method="GET")
+
+				recipe_username_pairs = Recipe.query.filter_by(user_id=selected_username.id).all()
+				if(((recipe_username_pairs) is None)):
+					return render_template('search.html', method="GET")
+
+				for recipe_username_pair in recipe_username_pairs:
+					recipe = Recipe.query.filter_by(id = recipe_username_pair.id)
+					recipes.append(recipe)
+				print(recipes)
+				return render_template('search.html', method="POST", recipes=recipes)
 			else:
 				# error
 				render_template('search.html', method="GET")
 
-			return render_template('search.html', method="POST", recipes=recipes)
+			render_template('search.html', method="GET")
 	else:  # prompt user to search
 		print("GET, search")
 		return render_template('search.html', method="GET")
