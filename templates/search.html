@@ -73,7 +73,7 @@
                                 {% for recipe in recipes_example %}
                                     <li>
                                         <h5>{{recipe.name}}</h5>
-                                        by User{{recipe.user_id}}
+                                        by {{recipe.get_username_by_id()}}
                                         <p>{{recipe.text}}</p>
                                         Score: {{ recipe.get_score() }}
                                         <br>
@@ -81,7 +81,7 @@
                                         {% if recipe.id in already_voted_recipe_ids %}
                                             You already voted for this recipe
                                         {% elif recipe.user_id == user_id %}
-                                            I guess you like your own recipe :)
+                                            This is Your's!
                                         {% else %}
                                             <a name= "like" href="{{url_for("vote_recipe", recipe_id=recipe.id, evaluation="like")}}">like</a>
                                             <a name= "dislike" href="{{url_for("vote_recipe", recipe_id=recipe.id, evaluation="dislike")}}">dislike</a>

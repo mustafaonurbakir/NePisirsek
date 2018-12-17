@@ -47,6 +47,11 @@ class User(db.Model):
 		user = User.query.filter_by(username=username).first()
 		return user
 
+	@staticmethod
+	def get_username_by_id(user_id):
+		user = User.query.filter_by(id=id).first()
+		return user.username
+
 
 class RecipeCategory(db.Model):
 	__tablename__ = 'RecipeCategory'
@@ -100,6 +105,10 @@ class Recipe(db.Model):
 			score += vote.value
 
 		return score
+
+	def get_username_by_id(self):
+		user = User.query.filter_by(id=self.user_id).first()
+		return user.username
 
 
 
@@ -198,6 +207,7 @@ def home():
 
 	username = session["username"]
 	user_id = session["user_id"]
+	session["url"] = "/"
 
 	recipes = Recipe.query.all()
 	already_voted_recipes = Vote.query.filter_by(user_id=user_id)
@@ -587,18 +597,28 @@ def vote_recipe(recipe_id, evaluation):
 			return redirect(url_for('home'))
 
 		# check if recipe_id is valid
-		recipe = Recipe.query.filter_by(id=recipe_id).first()
-		if Recipe.query.filter_by(id=recipe_id).count() == 0:
+		recipe_query = Recipe.query.filter_by(id=recipe_id)
+		recipe_count = recipe_query.count()
+		if  recipe_count == 0:
 			print("There is no such recipe")
 			flash("There is no such recipe", "error")
 			return redirect(url_for('home'))
 
-		# check if user is not owning the recipe
+		recipe = recipe_query.first()
+
+		# check if user has already voted that recipe
 		user_id = session["user_id"]
+		if Vote.query.filter_by(recipe_id=recipe_id, user_id=user_id).count() > 0:
+			print("You have already voted to that recipe")
+			flash("You have already voted to that recipe", "error")
+			return redirect(url_for(session["url"]))
+
+
+		# check if user is not owning the recipe
 		if recipe.user_id == user_id:
 			print("You cannot vote your own recipe")
 			flash("You cannot vote your own recipe", "error")
-			return redirect(url_for('home'))
+			return redirect(url_for(session["url"]))
 
 		if evaluation == "like":
 			value = 1
@@ -607,7 +627,7 @@ def vote_recipe(recipe_id, evaluation):
 		else:
 			print("Invalid evaluation")
 			flash("Invalid evaluation", "error")
-			return redirect(url_for('home'))
+			return redirect(url_for(session["url"]))
 
 		# check if user is a verified chef or not
 		user = User.query.get(user_id)
@@ -617,7 +637,7 @@ def vote_recipe(recipe_id, evaluation):
 		new_vote = Vote(user_id=user_id, recipe_id=recipe_id, value=value)
 		db.session.add(new_vote)
 		db.session.commit()
-		return redirect(url_for('home'))
+		return redirect(url_for(session["url"]))
 
 	#else:
 	#	print("GET, vote_recipe")
@@ -627,6 +647,8 @@ def vote_recipe(recipe_id, evaluation):
 def search():
 	if not check_if_user_logged_in():
 		return redirect(url_for('home'))
+
+	session["url"] = "search"
 
 	if request.method == "POST":  # result of search
 		print("POST, search")
@@ -644,6 +666,11 @@ def search():
 			print("{} field(s) must be filled!".format(missing_inputs))
 			return render_template('search.html', method="GET")
 		else:
+			user_id = session["user_id"]
+			recipes = Recipe.query.all()
+			already_voted_recipes = Vote.query.filter_by(user_id=user_id)
+			already_voted_recipe_ids = [vote.recipe_id for vote in already_voted_recipes]
+
 			# implement search logic here
 			if search_by == "ingredient":
 
@@ -659,7 +686,7 @@ def search():
 					recipes.append(recipe)
 
 				print(recipes)
-				return render_template('search.html', method="POST", recipes=recipes)
+				return render_template('search.html', method="POST", recipes=recipes, user_id=user_id, already_voted_recipe_ids=already_voted_recipe_ids)
 			elif search_by == "recipe_name":
 				recs = "%" +search_text+ "%"
 
@@ -670,7 +697,7 @@ def search():
 				for rec in selected_rec:
 					recipe = Recipe.query.filter_by(id = rec.id)
 					recipes.append(recipe)
-				return render_template('search.html', method="POST", recipes=recipes)
+				return render_template('search.html', method="POST", recipes=recipes, user_id=user_id, already_voted_recipe_ids=already_voted_recipe_ids)
 			elif search_by == "recipe_text":
 				recs = "%" +search_text+ "%"
 
@@ -681,7 +708,7 @@ def search():
 				for rec in selected_rec:
 					recipe = Recipe.query.filter_by(id = rec.id)
 					recipes.append(recipe)
-				return render_template('search.html', method="POST", recipes=recipes)
+				return render_template('search.html', method="POST", recipes=recipes, user_id=user_id, already_voted_recipe_ids=already_voted_recipe_ids)
 
 			elif search_by == "user_name":
 				user_name = search_text
@@ -698,7 +725,7 @@ def search():
 					recipe = Recipe.query.filter_by(id = recipe_username_pair.id)
 					recipes.append(recipe)
 				print(recipes)
-				return render_template('search.html', method="POST", recipes=recipes)
+				return render_template('search.html', method="POST", recipes=recipes, user_id=user_id, already_voted_recipe_ids=already_voted_recipe_ids)
 			else:
 				# error
 				render_template('search.html', method="GET")
@@ -708,6 +735,35 @@ def search():
 		print("GET, search")
 		return render_template('search.html', method="GET")
 
+
+@app.route('/leaderboard', methods=['POST', 'GET'])
+def leaderboard():
+	if not "logged_in" in session:
+		user_logged_in = False
+		session["logged_in"] = False
+	else:
+		user_logged_in = session["logged_in"]
+
+	if not user_logged_in:
+		return render_template('log_in.html')
+
+	username = session["username"]
+	user_id = session["user_id"]
+	session["url"] = "leaderboard"
+
+	recipes = Recipe.query.all()
+	sorted_recipes = sorted(recipes, key=lambda x: x.get_score(), reverse=True)
+
+	sorted_recipes = sorted_recipes[:10]
+
+	already_voted_recipes = Vote.query.filter_by(user_id=user_id)
+	already_voted_recipe_ids = [vote.recipe_id for vote in already_voted_recipes]
+	#print("already_voted_recipe_ids", already_voted_recipe_ids)
+	#print(session)
+
+	return render_template('leaderboard.html',
+	                       username=username, user_id=user_id, recipes=sorted_recipes,
+	                       already_voted_recipe_ids=already_voted_recipe_ids)
 
 if __name__ == '__main__':
 	db.create_all()
