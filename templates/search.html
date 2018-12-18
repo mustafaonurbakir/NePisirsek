@@ -16,12 +16,15 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='fonts/material-icon/css/material-design-iconic-font.min.css') }}">
     <!-- Main css -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" id="all-css-0-1" href="/static/css/1.css" type="text/css" media="all">
+	<link rel="stylesheet" id="button-2-fonts-css" href="/static/css/2.css" type="text/css" media="all">
+
 
 </head>
 <body>
 
-    <div class="main">
-        <!-- Sing in  Form -->
+   <!-- <div class="main">
+        &lt;!&ndash; Sing in  Form &ndash;&gt;
         <section class="sign-in">
             <div class="container">
                 <div class="signin-content">
@@ -99,6 +102,149 @@
         </section>
 
     </div>
+-->
+
+    <div id="page" class="hfeed site">
+
+        <header id="masthead" class="site-header" role="banner">
+            <div class="site-branding">
+                <img width="663" height="260" src="{{ url_for('static', filename='images/yemekler.jpg') }}" >
+                <h1 class="site-title">Ne Pişirsek?</a></h1>
+                <p class="site-description">Pişirilecek şeyler bulun!.</p>
+            </div><!-- .site-branding -->
+        </header><!-- #masthead -->
+
+        <nav id="site-navigation" class="main-navigation" role="navigation">
+            <div >
+                <ul >
+                    <li id="menu-item-271" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-271"><a href="{{url_for("add_recipe")}}">Add Recipe</a></li>
+                    <li id="menu-item-272" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-272"><a href="{{url_for("search")}}">Search</a></li>
+                    <li id="menu-item-273" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-273"><a href="{{url_for("profile")}}">My Profile</a></li>
+                    <li id="menu-item-272" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-272"><a href="{{url_for("leaderboard")}}">Leaderboard</a></li>
+                    <li id="menu-item-274" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-274"><a href="{{url_for("log_out")}}">Log out</a></li>
+                    <li id="menu-item-275" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-274">{{username}}</li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="signin-content">
+                    <div class="signin-image">
+                        <figure><img src="{{ url_for('static', filename='images/signin-image.jpg') }}" alt="sing up image"></figure>
+                    </div>
+
+                    <div class="search-form">
+                        <h2 class="form-title">Search Recipe</h2>
+                        <form action="{{url_for("search")}}" method="POST" class="register-form" id="search-form">
+                            <div class="form-group">
+                                <textarea name="search_text" id="search_text" rows="2" cols="35" placeholder="Search from here" ></textarea>
+                            </div>
+
+                            <div class="SearchDiv" >
+                                <b>Search recipe by</b>
+                                <div class= "radio1">
+                                    <input type="radio" name="search_by" value="recipe_name">
+                                    <span>Name of Recipe</span>
+                                </div>
+                                <div class = "radio2">
+                                    <input type="radio" name="search_by" value="ingredient">
+                                    <span> Ingredient(s) </span>
+                                </div>
+                                <div class = "radio3">
+                                    <input type="radio" name="search_by" value="recipe_text">
+                                    <span> Text of Recipe </span>
+                                </div>
+                                <div class = "radio4">
+                                    <input type="radio" name="search_by" value="user_name">
+                                    <span> Name of User </span>
+                                </div>
+                            </div>
+
+                            <div class="form-group form-button">
+                                <input type="submit" name="search_recipe" id="add_recipe" class="form-submit" value="Search"/>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+        {% if method=="POST" %}
+
+        <div id="content" class="site-content">
+
+            <div id="primary" class="content-area">
+                <main id="main" class="site-main" role="main">
+
+                    {% for recipes_example in recipes %}
+
+                    {%for recipe in recipes_example%}
+                    <article id="post-65" class="post-65 post type-post status-publish format-standard has-post-thumbnail hentry category-community tag-food tag-gardening">
+                    <header class="entry-header">
+                        <div>
+                                <p style="text-align:center;">
+                                <img width="300" height="200"
+                                     src="static/images/signin-image.jpg"
+                                     class="attachment-button-2-featured size-button-2-featured wp-post-image" alt=""
+                                     >
+                                </p>
+                        </div>
+
+                        <span class="cat-links"><a rel="category tag">Chef: {{recipe.get_username_by_id()}}</a></span>
+                        <h1 class="entry-title">{{recipe.name}}</h1>
+                        <div class="entry-meta">
+                            <span class="posted-on">
+                                <a rel="bookmark">Score: {{recipe.get_score()}}</a>
+                            </span>
+                        </div>
+                    </header><!-- .entry-header -->
+
+                    <div class="entry-content">
+                        <p> {{recipe.text}} </p>
+                        <div class="page-links">
+
+                            {% if recipe.id in already_voted_recipe_ids %}
+                                You already voted for this recipe
+                            {% elif recipe.user_id == user_id %}
+                                This is Your's!
+                            {% else %}
+                                <a href="{{url_for("vote_recipe", recipe_id=recipe.id, evaluation="like")}}">
+
+                                    <span class="active-link">
+                                        <img src="static/images/like.png" style="height: 80%; width: 80%">
+                                    </span>
+                                </a>
+
+                                <a href="{{url_for("vote_recipe", recipe_id=recipe.id, evaluation="dislike")}}" >
+                                    <span class="active-link">
+                                        <img src="static/images/dislike.png" style="height: 80%; width: 80%" >
+                                    </span>
+                                </a>
+                            {% endif %}
+
+                        </div>
+                    </div><!-- .entry-content -->
+
+                </article><!-- #post-## -->
+                    {% endfor %}
+
+                    {% endfor %}
+
+                </main>
+            </div>
+
+        </div><!-- #content -->
+
+        {% endif %}
+
+        <footer id="colophon" class="site-footer" role="contentinfo">
+            <div class="footer-widgets clear">
+            </div>
+            <div class="site-info">
+                <a>Ne Pişirsek? İTÜ'de doğmuştur. </a>
+            </div>
+
+        </footer><!-- #colophon -->
+
+    </div>
+
 
     <!-- JS -->
 
