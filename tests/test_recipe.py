@@ -33,10 +33,10 @@ class Test(object):
         password_input.send_keys(self.password)
         signup_button.click()
         self.browser.find_element_by_xpath('//a[@name="profile"]').click()
-        assert (self.browser.find_element_by_xpath('//div[@class="main_profile"]'))
+        assert (self.browser.find_element_by_xpath('//div[@name="main_profile"]'))
         print("profile page is successful")
 
-    def check_edit_recipe(self):
+    def check_recipe_update(self):
         self.browser.find_element_by_xpath('//a[@name="edit"]').click()
         popups = WebDriverWait(self.browser, self.delay).until(
             lambda x: x.find_elements_by_xpath('//div[@class="editrecipe-form"]'))
@@ -47,7 +47,7 @@ class Test(object):
         edit_recipe_button = popups[0].find_element_by_xpath('//input[@name="edit_recipe"]')
  
         edit_recipe_button.click()
-        assert (self.browser.find_element_by_xpath('//div[@class="forchecking"]')) 
+        assert (self.browser.find_element_by_xpath('//div[@name="main_check"]')) 
         print("editing recipe is successful")
 
     def check_delete_recipe(self):
@@ -61,7 +61,7 @@ class Test(object):
         delete_recipe_button = popups[0].find_element_by_xpath('//input[@name="delete_recipe"]')
  
         delete_recipe_button.click()
-        assert (self.browser.find_element_by_xpath('//div[@class="forchecking"]')) 
+        assert (self.browser.find_element_by_xpath('//div[@name="main_check"]')) 
         print("deleting recipe is successful")
 	
 		                   

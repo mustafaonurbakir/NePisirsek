@@ -19,12 +19,10 @@ class Test(object):
         self.username = 'test' + str(rand)
         self.email = 'test' +str(rand) + '@test.com'
         self.password = 'test3'
-        self.recipe_name = 'testrecipe' + str(rand)
-        self.recipe_text = 'lorem ipsulum'
 		
-	def check_sign_up_missing_field(self):
+    def check_sign_up_missing_field(self):
         url = '/sign_up'
-		#email missing
+                #email missing
         self.browser.get(self.site + url)
 
         popups = WebDriverWait(self.browser, self.delay).until(
@@ -36,7 +34,7 @@ class Test(object):
         password_input = popups[0].find_element_by_xpath('//input[@name="pass"]')
         repassword_input = popups[0].find_element_by_xpath('//input[@name="re_pass"]')
 
- 
+
         signup_button = popups[0].find_element_by_xpath('//input[@name="signup"]')
 
         name_input.send_keys(self.name)
@@ -46,16 +44,15 @@ class Test(object):
         
         password_input.send_keys(self.password)
         repassword_input.send_keys(self.password)
- 
+
         signup_button.click()
 
-        assert(self.browser.find_element_by_xpath('//div[@class="forchecking"]'))
-        print("signed up correctly")    
-        self.browser.find_element_by_xpath('//a["log out"]').click()
-	
-	def check_sign_up_mismatch_password(self):
+        assert(self.browser.find_element_by_xpath('//div[@class="signup-content"]'))
+        print("missing fields")    
+    
+    def check_sign_up_mismatch_password(self):
         url = '/sign_up'
-		#password 
+                #password 
         self.browser.get(self.site + url)
 
         popups = WebDriverWait(self.browser, self.delay).until(
@@ -67,7 +64,7 @@ class Test(object):
         password_input = popups[0].find_element_by_xpath('//input[@name="pass"]')
         repassword_input = popups[0].find_element_by_xpath('//input[@name="re_pass"]')
 
- 
+
         signup_button = popups[0].find_element_by_xpath('//input[@name="signup"]')
 
         name_input.send_keys(self.name)
@@ -76,13 +73,12 @@ class Test(object):
         email_input.send_keys(self.email)
         
         password_input.send_keys(self.password)
-        repassword_input.send_keys(self.password)
- 
+        repassword_input.send_keys('a')
+
         signup_button.click()
 
-        assert(self.browser.find_element_by_xpath('//div[@class="forchecking"]'))
-        print("signed up correctly")    
-        self.browser.find_element_by_xpath('//a["log out"]').click()
+        assert(self.browser.find_element_by_xpath('//div[@class="signup-content"]'))
+        print("mismatch password")    
 	
     def check_sign_up_all_valid(self):
         url = '/sign_up'
@@ -111,53 +107,9 @@ class Test(object):
  
         signup_button.click()
 
-        assert(self.browser.find_element_by_xpath('//div[@class="forchecking"]'))
+        assert(self.browser.find_element_by_xpath('//div[@name="main_check"]'))
         print("signed up correctly")    
         self.browser.find_element_by_xpath('//a["log out"]').click()
-
-    def check_log_in_all_valid(self):
-        url = '/'
-		
-        self.browser.get(self.site + url)
-
-        popups = WebDriverWait(self.browser, self.delay).until(
-            lambda x: x.find_elements_by_xpath('//div[@class="signin-form"]'))
-        username_input = popups[0].find_element_by_xpath('//input[@name="username"]')
-        password_input = popups[0].find_element_by_xpath('//input[@name="password"]')
- 
-        signup_button = popups[0].find_element_by_xpath('//input[@name="signin"]')
- 
-        username_input.send_keys(self.username)
-        password_input.send_keys(self.password)
- 
-        signup_button.click()
- 
-        assert (self.browser.find_element_by_xpath('//div[@class="forchecking"]'))
-        print("log in is successful")
-
-    def check_add_recipe_all_valid(self):
-        url = '/add_recipe'
- 
-        self.browser.get(self.site + url)
-
-        popups = WebDriverWait(self.browser, self.delay).until(
-            lambda x: x.find_elements_by_xpath('//div[@class="addrecipe-form"]'))
-        recipe_name_input = popups[0].find_element_by_xpath('//input[@name="recipe_name"]')
-        recipe_text_input = popups[0].find_element_by_xpath('//textarea[@name="recipe_text"]')
-        recipe_name_input.send_keys(self.recipe_name)
-        recipe_text_input.send_keys(self.recipe_text)
-        category_input = popups[0].find_element_by_xpath('//input[@name="category"]')
-        category_input.click()
-
-        ingredient_input = popups[0].find_element_by_xpath('//input[@name="ingredient"]')
-        ingredient_input.click()
-        
-        add_recipe_button = popups[0].find_element_by_xpath('//input[@name="add_recipe"]')
- 
-        add_recipe_button.click()
- 
-        assert (self.browser.find_element_by_xpath('//div[@class="forchecking"]')) 
-        print("adding recipe is successful")
             
             
     def run(self):

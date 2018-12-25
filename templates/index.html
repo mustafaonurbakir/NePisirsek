@@ -12,7 +12,7 @@
 
 	</head>
 	<body class="home blog custom-background wp-custom-logo wp-embed-responsive mp6 customizer-styles-applied group-blog highlander-enabled highlander-light infinite-scroll">
-		<div id="page" class="hfeed site">
+		<div id="page" class="hfeed site" name="main_check">
 
 			<header id="masthead" class="site-header" role="banner">
 				<div class="site-branding">
@@ -27,7 +27,7 @@
 					<ul >
 						<li id="menu-item-271" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-271"><a href="{{url_for("add_recipe")}}">Add Recipe</a></li>
 						<li id="menu-item-272" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-272"><a href="{{url_for("search")}}">Search</a></li>
-						<li id="menu-item-273" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-273"><a href="{{url_for("profile")}}">My Profile</a></li>
+						<li id="menu-item-273" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-273"><a href="{{url_for("profile")}}" name="profile">My Profile</a></li>
 						<li id="menu-item-272" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-272"><a href="{{url_for("leaderboard")}}">Leaderboard</a></li>
 						<li id="menu-item-274" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-274"><a href="{{url_for("log_out")}}">Log out</a></li>
 						<li id="menu-item-275" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-274">{{username}}</li>

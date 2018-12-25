@@ -12,8 +12,7 @@ class Test(object):
     def __init__(self):
         self.site = 'http://127.0.0.1:5000'
         self.delay = 2  # seconds
-         
-        self.name = 'admin'
+
         self.username = 'admin'
         self.password = 'admin'
 
@@ -37,7 +36,7 @@ class Test(object):
         signup_button.click()
  
         assert (self.browser.find_element_by_xpath('//div[@class="container"]'))
-        print("log in is successful")
+        print("log in as admin is successful")
 	
 
     def check_verification(self):
@@ -48,17 +47,8 @@ class Test(object):
         self.browser.find_element_by_xpath('//a["Verify/NonVerify"]').click()
  
         assert (self.browser.find_element_by_xpath('//div[@class="container"]'))
-        print("verification is successful")   
- 
-    def check_logout(self):
-        url = '/admin'
- 
-        self.browser.get(self.site + url)
-
-        self.browser.find_element_by_xpath('//a["log out"]').click()
- 
-        assert (self.browser.find_element_by_xpath('//div[@class="container"]'))
-        print("logout is successful")    
+        print("verification is successful")
+        self.browser.find_element_by_xpath('//a["log out"]').click()  
             
     def run(self):
         self.browser = webdriver.Chrome(r'C:\Users\emreb\Desktop\chromedriver.exe')
