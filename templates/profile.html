@@ -5,48 +5,87 @@
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
+    	<link rel="stylesheet" id="all-css-0-1" href="/static/css/1.css" type="text/css" media="all">
+	<link rel="stylesheet" id="button-2-fonts-css" href="/static/css/2.css" type="text/css" media="all">
 </head>
 <body>
-     <div name="main_profile" style = "margin-Top:100px" class="container">
-        <h2>Hi, {{ username }}!</h2>
-        <a href="{{url_for("log_out")}}"  class = "btn btn-secondary btn-sm">Log out</a>
-        <a href="{{url_for("add_recipe")}}"  class = "btn btn-secondary btn-sm">Add New Recipe</a>
-        <br>
-		<h4>Your Recipes</h4>
-		<div>
-		
-		{% if recipes == []%}
-            <div class="alert alert-warning" role="alert">
-                There is no recipe.
+
+     <div id="page" class="hfeed site">
+
+			<header id="masthead" class="site-header" role="banner">
+				<div class="site-branding">
+					<img width="663" height="260" src="{{ url_for('static', filename='images/yemekler.jpg') }}" >
+					<h1 class="site-title">Ne Pişirsek?</a></h1>
+					<p class="site-description">Pişirilecek şeyler bulun!.</p>
+				</div><!-- .site-branding -->
+			</header><!-- #masthead -->
+
+			<nav id="site-navigation" class="main-navigation" role="navigation">
+				<div >
+					<ul >
+						<li id="menu-item-271" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-271"><a href="{{url_for("add_recipe")}}">Add Recipe</a></li>
+						<li id="menu-item-272" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-272"><a href="{{url_for("search")}}">Search</a></li>
+						<li id="menu-item-273" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-273"><a href="{{url_for("profile")}}">My Profile</a></li>
+						<li id="menu-item-272" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-272"><a href="{{url_for("leaderboard")}}">Leaderboard</a></li>
+						<li id="menu-item-274" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-274"><a href="{{url_for("log_out")}}">Log out</a></li>
+						<li id="menu-item-275" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-274">{{username}}</li>
+					</ul>
+				</div>
+			</nav>
+
+            <div name="main_profile" style = "margin-Top:100px" class="container">
+                <h2>Hi, {{ username }}!</h2>
+                <a href="{{url_for("log_out")}}"  class = "btn btn-secondary btn-sm">Log out</a>
+                <a href="{{url_for("add_recipe")}}"  class = "btn btn-secondary btn-sm">Add New Recipe</a>
+                <br>
+                <h4>Your Recipes</h4>
+                <div>
+
+                {% if recipes == []%}
+                    <div class="alert alert-warning" role="alert">
+                        There is no recipe.
+                    </div>
+
+                {% else %}
+
+                <table class="table table-striped ">
+                <thead>
+                <tr>
+                  <th scope="col">Name</th>
+                  <th scope="col">Text</th>
+                  <th scope="col"></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for recipe in recipes: %}
+                <tr>
+                    <td>{{recipe.name}}</td>
+                    <td>{{recipe.text}}</td>
+
+                    <td><a name="edit" href="{{url_for("edit_recipe", recipe_id=recipe.id)}}" class = "btn btn-info  btn-sm">Edit this recipe</a>
+                    <br>
+                     <a name="delete" href="{{url_for("delete_recipe", recipe_id=recipe.id)}}" class = "btn btn-danger btn-sm">Delete this recipe</a></td>
+                </tr>
+                {% endfor %}
+                </tbody>
+                </table>
+                {% endif%}
+                </div>
+
             </div>
 
-        {% else %}
 
-        <table class="table table-striped ">
-        <thead>
-        <tr>
-          <th scope="col">Name</th>
-          <th scope="col">Text</th>
-		  <th scope="col"></th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for recipe in recipes: %}
-        <tr>
-            <td>{{recipe.name}}</td>
-            <td>{{recipe.text}}</td>
+			<footer id="colophon" class="site-footer" role="contentinfo">
+				<div class="footer-widgets clear">
+				</div>
+				<div class="site-info">
+					<a>Ne Pişirsek? İTÜ'de doğmuştur. </a>
+				</div>
 
-			<td><a name="edit" href="{{url_for("edit_recipe", recipe_id=recipe.id)}}" class = "btn btn-info  btn-sm">Edit this recipe</a>
-			<br>
-             <a name="delete" href="{{url_for("delete_recipe", recipe_id=recipe.id)}}" class = "btn btn-danger btn-sm">Delete this recipe</a></td>
-        </tr>
-        {% endfor %}
-        </tbody>
-        </table>
-		{% endif%}
+			</footer><!-- #colophon -->
+
 		</div>
 
-    </div>
 
     <!-- JS -->
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>

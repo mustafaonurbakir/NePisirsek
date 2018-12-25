@@ -10,14 +10,38 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='fonts/material-icon/css/material-design-iconic-font.min.css') }}">
     <!-- Main css -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" id="all-css-0-1" href="/static/css/1.css" type="text/css" media="all">
+	<link rel="stylesheet" id="button-2-fonts-css" href="/static/css/2.css" type="text/css" media="all">
 
 </head>
 <body>
 
-    <div class="main">
-        <!-- Sing in  Form -->
-        <section class="sign-in">
-            <div class="container">
+
+    <div id="page" class="hfeed site">
+
+			<header id="masthead" class="site-header" role="banner">
+				<div class="site-branding">
+					<img width="663" height="260" src="{{ url_for('static', filename='images/yemekler.jpg') }}" >
+					<h1 class="site-title">Ne Pişirsek?</a></h1>
+					<p class="site-description">Pişirilecek şeyler bulun!.</p>
+				</div><!-- .site-branding -->
+			</header><!-- #masthead -->
+
+			<nav id="site-navigation" class="main-navigation" role="navigation">
+				<div >
+					<ul >
+						<li id="menu-item-271" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-271"><a href="{{url_for("add_recipe")}}">Add Recipe</a></li>
+						<li id="menu-item-272" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-272"><a href="{{url_for("search")}}">Search</a></li>
+						<li id="menu-item-273" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-273"><a href="{{url_for("profile")}}">My Profile</a></li>
+						<li id="menu-item-272" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-272"><a href="{{url_for("leaderboard")}}">Leaderboard</a></li>
+						<li id="menu-item-274" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-274"><a href="{{url_for("log_out")}}">Log out</a></li>
+						<li id="menu-item-275" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-274">{{username}}</li>
+					</ul>
+				</div>
+			</nav>
+
+            <section class="sign-in">
+            <div>
                 <div class="signin-content">
                     <div class="signin-image">
                         <figure><img src="{{ url_for('static', filename='images/signin-image.jpg') }}" alt="sing up image"></figure>
@@ -58,7 +82,17 @@
             </div>
         </section>
 
-    </div>
+
+			<footer id="colophon" class="site-footer" role="contentinfo">
+				<div class="footer-widgets clear">
+				</div>
+				<div class="site-info">
+					<a>Ne Pişirsek? İTÜ'de doğmuştur. </a>
+				</div>
+
+			</footer><!-- #colophon -->
+
+		</div>
 
     <!-- JS -->
 
