@@ -128,7 +128,7 @@
         </nav>
 
         <div class="signin-content">
-                    <div class="signin-image">
+                    <div class="signin-image" name="search">
                         <figure><img src="{{ url_for('static', filename='images/signin-image.jpg') }}" alt="sing up image"></figure>
                     </div>
 
@@ -142,19 +142,19 @@
                             <div class="SearchDiv" >
                                 <b>Search recipe by</b>
                                 <div class= "radio1">
-                                    <input type="radio" name="search_by" value="recipe_name">
+                                    <input type="radio" name="search_by_name" value="recipe_name">
                                     <span>Name of Recipe</span>
                                 </div>
                                 <div class = "radio2">
-                                    <input type="radio" name="search_by" value="ingredient">
+                                    <input type="radio" name="search_by_ingredient" value="ingredient">
                                     <span> Ingredient(s) </span>
                                 </div>
                                 <div class = "radio3">
-                                    <input type="radio" name="search_by" value="recipe_text">
+                                    <input type="radio" name="search_by_category" value="recipe_text">
                                     <span> Text of Recipe </span>
                                 </div>
                                 <div class = "radio4">
-                                    <input type="radio" name="search_by" value="user_name">
+                                    <input type="radio" name="search_by_user" value="user_name">
                                     <span> Name of User </span>
                                 </div>
                             </div>

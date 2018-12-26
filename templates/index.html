@@ -26,10 +26,10 @@
 				<div >
 					<ul >
 						<li id="menu-item-271" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-271"><a href="{{url_for("add_recipe")}}">Add Recipe</a></li>
-						<li id="menu-item-272" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-272"><a href="{{url_for("search")}}">Search</a></li>
+						<li id="menu-item-272" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-272"><a href="{{url_for("search")}}" name="search">Search</a></li>
 						<li id="menu-item-273" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-273"><a href="{{url_for("profile")}}" name="profile">My Profile</a></li>
 						<li id="menu-item-272" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-272"><a href="{{url_for("leaderboard")}}">Leaderboard</a></li>
-						<li id="menu-item-274" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-274"><a href="{{url_for("log_out")}}">Log out</a></li>
+						<li id="menu-item-274" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-274"><a href="{{url_for("log_out")}}" name="logout">Log out</a></li>
 						<li id="menu-item-275" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-274">{{username}}</li>
 					</ul>
 				</div>
@@ -71,7 +71,7 @@
 								{% elif recipe.user_id == user_id %}
 									This is Your's!
 								{% else %}
-									<a href="{{url_for("vote_recipe", recipe_id=recipe.id, evaluation="like")}}">
+									<a href="{{url_for("vote_recipe", recipe_id=recipe.id, evaluation="like")}}" name="like">
 
 										<span class="active-link">
 											<img src="static/images/like.png" style="height: 80%; width: 80%">

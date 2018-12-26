@@ -14,10 +14,11 @@ class Test(object):
         self.delay = 2  # seconds
         self.ingredient = "elma"
         self.username = 'alercelik'
+        self.category = 'Meat'
         rand =  random.randint(1000, 9999)
         self.password = 'A'
 
-    def check_search_recipe_ingredient(self):
+    def check_ingredient_search(self):
         url = '/'
         self.browser.get(self.site + url)
         popups = WebDriverWait(self.browser, self.delay).until(
@@ -38,7 +39,27 @@ class Test(object):
         self.browser.find_element_by_xpath('//input[@name="search_recipe"]').click()
         assert (self.browser.find_element_by_xpath('//div[@name="search"]'))
         print("ingredient search is successful")
-	
+
+    def check_category_search(self):
+        self.browser.find_element_by_xpath('//textarea[@name="search_text"]').send_keys(self.category)
+        self.browser.find_element_by_xpath('//input[@value="recipe_text"]').click()
+        self.browser.find_element_by_xpath('//input[@name="search_recipe"]').click()
+        assert (self.browser.find_element_by_xpath('//div[@name="search"]'))
+        print("category search is successful")
+
+    def check_name_search(self):
+        self.browser.find_element_by_xpath('//textarea[@name="search_text"]').send_keys(self.username)
+        self.browser.find_element_by_xpath('//input[@value="user_name"]').click()
+        self.browser.find_element_by_xpath('//input[@name="search_recipe"]').click()
+        assert (self.browser.find_element_by_xpath('//div[@name="search"]'))
+        print("name search is successful")
+
+    def check_search_missing_input(self):
+        self.browser.find_element_by_xpath('//textarea[@name="search_text"]').send_keys(self.username)
+
+        self.browser.find_element_by_xpath('//input[@name="search_recipe"]').click()
+        assert (self.browser.find_element_by_xpath('//div[@name="search"]'))
+        print("missing field")
         
     def run(self):
         self.browser = webdriver.Chrome(r'C:\Users\emreb\Desktop\chromedriver.exe')

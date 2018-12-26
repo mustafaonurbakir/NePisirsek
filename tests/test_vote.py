@@ -14,10 +14,11 @@ class Test(object):
         self.delay = 2  # seconds
 
         self.username = 'alercelik'
-        rand =  random.randint(1000, 9999)
         self.password = 'A'
 
-    def check_vote_like(self):
+        self.username2 = 'EmreBulgurcu'
+        self.password2 = 'A'
+    def check_chef_voting(self):
         url = '/'
         self.browser.get(self.site + url)
         popups = WebDriverWait(self.browser, self.delay).until(
@@ -31,15 +32,27 @@ class Test(object):
         password_input.send_keys(self.password)
         signup_button.click()
         self.browser.find_element_by_xpath('//a[@name="like"]').click()
-        assert (self.browser.find_element_by_xpath('//div[@class="forchecking"]'))
-        print("voting like is successful")
+        assert (self.browser.find_element_by_xpath('//div[@name="main_check"]'))
+        print("chef voting like is successful")
+        self.browser.find_element_by_xpath('//a[@name="logout"]').click()
 	
-    def check_vote_dislike(self):
+    def check_verified_chef_voting(self):
         url = '/'
         self.browser.get(self.site + url)
-        self.browser.find_element_by_xpath('//a[@name="dislike"]').click()
-        assert (self.browser.find_element_by_xpath('//div[@class="forchecking"]'))
-        print("voting dislike is successful")
+        popups = WebDriverWait(self.browser, self.delay).until(
+	lambda x: x.find_elements_by_xpath('//div[@class="signin-form"]'))
+        username_input = popups[0].find_element_by_xpath('//input[@name="username"]')
+        password_input = popups[0].find_element_by_xpath('//input[@name="password"]')
+                         
+        signup_button = popups[0].find_element_by_xpath('//input[@name="signin"]')
+                         
+        username_input.send_keys(self.username2)
+        password_input.send_keys(self.password2)
+        signup_button.click()
+        self.browser.find_element_by_xpath('//a[@name="like"]').click()
+        assert (self.browser.find_element_by_xpath('//div[@name="main_check"]'))
+        print("verified chef voting like is successful")
+        self.browser.find_element_by_xpath('//a[@name="logout"]').click()
         
     def run(self):
         self.browser = webdriver.Chrome(r'C:\Users\emreb\Desktop\chromedriver.exe')
