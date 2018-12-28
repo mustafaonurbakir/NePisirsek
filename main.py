@@ -1,5 +1,6 @@
 import datetime
-
+import numpy as np
+from sklearn.cluster import KMeans
 from flask import Flask, redirect, url_for, request, flash, session, render_template
 from  flask_sqlalchemy import SQLAlchemy
 
@@ -190,7 +191,26 @@ def check_if_user_logged_in():
 def get_datetime_by_str(datetime_string, format="%Y-%m-%d %H:%M:%S.%f"):
 	return datetime.strptime(datetime_string, format)
 
+def createCluster():
+	all_users = User.query.filter_by()
+	all_ingredients = RecipeCategory.query.filter_by()
+	user_count = 0
+	ingredient_count = 0
+	for user in all_users:
+		user_count += 1
+	for ingredient in all_ingredients:
+		ingredient_count += 1
+	user_array = np.zeros((user_count,1) , dtype = 'int32')
+	ingredient_array = np.zeros((user_count,ingredient_count),dtype='float64')
 
+	for i in range(user_count):
+		all_votes = Vote.query.filter_by(user_id = i)
+		for vote in all_votes:
+			all_liked_recipes = RecipeIngredientTable.query.filter_by(recipe_id = vote.recipe_id)
+			for liked_recipe in all_liked_recipes:
+				if(liked_recipe.ingredient_id >= 0 and liked_recipe.ingredient_id < ingredient_count):
+					ingredient_array[i,liked_recipe.ingredient_id]+=1
+	print(ingredient_array)
 
 ############################### ROUTES ############################
 
@@ -646,6 +666,7 @@ def vote_recipe(recipe_id, evaluation):
 
 @app.route('/search', methods=['POST', 'GET'])
 def search():
+
 	if not check_if_user_logged_in():
 		return redirect(url_for('home'))
 
@@ -768,4 +789,5 @@ def leaderboard():
 
 if __name__ == '__main__':
 	db.create_all()
+	createCluster()
 	app.run(debug=True)
