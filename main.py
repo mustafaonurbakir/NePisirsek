@@ -13,6 +13,8 @@ db = SQLAlchemy(app)
 
 ########################### MODELS ###########################
 
+
+
 # http://flask-sqlalchemy.pocoo.org/2.3/models/
 class User(db.Model):
 	__tablename__ = 'User'
@@ -65,6 +67,16 @@ class RecipeCategory(db.Model):
 	def list_of_categories():
 		category_names = RecipeCategory.query(RecipeCategory.name).all()
 		return category_names
+
+class Cluster(db.Model):
+	__tablename__ = 'Cluster'
+	id = db.Column(db.Integer, primary_key=True)
+	user_id = db.Column(db.Integer, db.ForeignKey('User.id'), nullable=False)
+	cluster = db.Column(db.Integer)
+
+	def __init__(self, user_id, cluster):
+		self.user_id = user_id
+		self.cluster = cluster
 
 class Recipe(db.Model):
 	__tablename__ = 'Recipe'
@@ -210,7 +222,11 @@ def createCluster():
 			for liked_recipe in all_liked_recipes:
 				if(liked_recipe.ingredient_id >= 0 and liked_recipe.ingredient_id < ingredient_count):
 					ingredient_array[i,liked_recipe.ingredient_id]+=1
-	print(ingredient_array)
+
+	user_clusters = KMeans(n_clusters=5).fit_predict(ingredient_array)
+	return user_clusters
+
+
 
 ############################### ROUTES ############################
 
@@ -232,11 +248,45 @@ def home():
 	recipes = Recipe.query.all()
 	already_voted_recipes = Vote.query.filter_by(user_id=user_id)
 	already_voted_recipe_ids = [vote.recipe_id for vote in already_voted_recipes]
-	#print(session)
 
 	return render_template('index.html', user_logged_in=user_logged_in,
 	                       username=username, user_id=user_id, recipes=recipes,
 	                       already_voted_recipes=already_voted_recipes, already_voted_recipe_ids=already_voted_recipe_ids)
+
+
+@app.route('/recommend', methods=['POST', 'GET'])
+def recommend():
+	if not "logged_in" in session:
+		user_logged_in = False
+		session["logged_in"] = False
+	else:
+		user_logged_in = session["logged_in"]
+
+	if not user_logged_in:
+		return render_template('log_in.html')
+
+	username = session["username"]
+	user_id = session["user_id"]
+	session["url"] = "/"
+
+
+	recipes = []
+	user_type = Cluster.query.filter_by(user_id = user_id).first()
+	similar_users = Cluster.query.filter_by(cluster=user_type.cluster).all()
+	for similar_user in similar_users:
+		recipe_username_pairs = Recipe.query.filter_by(user_id=similar_user.user_id).all()
+		for recipe_username_pair in recipe_username_pairs:
+			recipe = Recipe.query.filter_by(id = recipe_username_pair.id)
+			recipes.append(recipe)
+
+	already_voted_recipes = Vote.query.filter_by(user_id=user_id)
+	already_voted_recipe_ids = [vote.recipe_id for vote in already_voted_recipes]
+
+
+	return render_template('recommend.html', user_logged_in=user_logged_in,
+	                       username=username, user_id=user_id, recipes=recipes,
+	                       already_voted_recipes=already_voted_recipes, already_voted_recipe_ids=already_voted_recipe_ids)
+
 
 @app.route('/profile', methods=['POST', 'GET'])
 def profile():
@@ -304,11 +354,34 @@ def log_out():
 
 @app.route('/log_in', methods=['POST', 'GET'])
 def log_in():
+	user_clusters = createCluster()
+	#clusters = Cluster.query.all()
+	#for cluster in clusters:
+		#db.session.delete(cluster)
+	for i in range(len(user_clusters)):
+		print(str(i) + ' ' + str(user_clusters[i]))
+		user_profile = Cluster(user_id = i, cluster=user_clusters[i])
+		try:
+			db.session.add(user_profile)
+			print(str(i) + ' ' + str(user_clusters[i]))
+			db.session.flush()
+			print(str(i) + ' ' + str(user_clusters[i]))
+			db.session.commit()
+			print(str(i) + ' ' + str(user_clusters[i]))
+		except:
+			print('X')
+			continue
+	try:
+		db.session.commit()
+	except:
+		print('Already exists')
+
 	return render_template('log_in.html')
 
 
 @app.route('/log_in_confirm', methods=['POST', 'GET'])
 def log_in_confirm():
+	print('try')
 	if request.method == "POST":
 		username = request.form.get("username")
 		password = request.form.get("password")
@@ -789,5 +862,4 @@ def leaderboard():
 
 if __name__ == '__main__':
 	db.create_all()
-	createCluster()
 	app.run(debug=True)
